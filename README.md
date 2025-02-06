@@ -1,18 +1,37 @@
-[![Project Status: Concept – Minimal or no implementation has been done yet, or the repository is only intended to be a limited example, demo, or proof-of-concept.](https://www.repostatus.org/badges/latest/concept.svg)](https://www.repostatus.org/#concept)
+[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/f5/f5-cla/badge)](https://securityscorecards.dev/viewer/?uri=github.com/f5/f5-cla)
-[![Community Support](https://badgen.net/badge/support/community/cyan?icon=awesome)](/SUPPORT.md) <!-- [![Commercial Support](https://badgen.net/badge/support/commercial/cyan?icon=awesome)](<Insert URL>) -->
-[![Community Forum](https://img.shields.io/badge/community-forum-009639?logo=discourse&link=https%3A%2F%2Fcommunity.nginx.org)](https://community.nginx.org)
+[![Community Support](https://badgen.net/badge/support/community/cyan?icon=awesome)](/SUPPORT.md)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](/CODE_OF_CONDUCT.md)
-# f5_cla
-## Requirements
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam elit turpis, varius et arcu elementum, viverra rhoncus sem. Aliquam nec sodales magna, et egestas enim. Mauris lobortis ultrices euismod. Pellentesque in arcu lacus. Mauris cursus laoreet nulla, ac vehicula est. Vestibulum eu mauris quis lorem consectetur aliquam ac nec quam. Vestibulum commodo pharetra mi, at bibendum neque faucibus ut. Mauris et tortor sed sem consectetur eleifend ut non magna. Praesent feugiat placerat nibh, varius viverra orci bibendum sed. Vestibulum dapibus ex ut pulvinar facilisis. Quisque sodales enim et augue tempor mattis. Suspendisse finibus congue felis, ac blandit ligula. Praesent condimentum ultrices odio quis semper. Nunc ultrices, nibh quis mattis pellentesque, elit nulla bibendum felis, quis dapibus erat turpis ac urna.
-## Getting Started
-Duis sit amet sapien vel velit ornare vulputate. Nulla rutrum euismod risus ac efficitur. Curabitur in sagittis elit, a semper leo. Suspendisse malesuada aliquam velit, eu suscipit lorem vehicula at. Proin turpis lacus, semper in placerat in, accumsan non ipsum. Cras euismod, elit eget pretium laoreet, tortor nulla finibus tortor, nec hendrerit elit turpis ut eros. Quisque congue nisi id mauris molestie, eu condimentum dolor rutrum. Nullam eleifend elit ac lobortis tristique. Pellentesque nec tellus non mauris aliquet commodo a eu elit. Ut at feugiat metus, at tristique mauris. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae;
-## How to Use
-Maecenas at vehicula justo. Suspendisse posuere elementum elit vel posuere. Etiam quis pulvinar massa. Integer tempor semper risus, vitae maximus eros ullamcorper vitae. In egestas, ex vitae gravida sodales, ipsum dolor varius est, et cursus lorem dui a mi. Morbi faucibus ut nisi id faucibus. Sed quis ullamcorper ex. In et dolor id nunc interdum suscipit.
-## Contributing
-Please see the [contributing guide](/CONTRIBUTING.md) for guidelines on how to best contribute to this project.
-## License
+
+# F5 Contributor License Agreement (CLA) Documentation & Workflow
+
+This repository is intended to serve as the consolidated documentation and GitHub Actions workflow for automating the F5 Contributor License Agreement (CLA) process. The respective signatures from contributors towards F5 affiliated Open Source Software (OSS) projects are stored separately.
+
+## Documentation
+
+The F5 CLA agreement can be found in the [/docs/f5_cla.md](/docs/f5_cla.md) subdirectory.
+
+## Sample GitHub Actions Workflow
+
+You can find a fully functional CLA GitHub Action workflow in [`.github/workflows/f5_cla.yml`](/.github/workflows/f5_cla.yml). This workflow uses the [CLA Assistant GitHub Action](https://github.com/contributor-assistant/github-action) to write and read data to/from F5's data storage. We encourage you use this workflow in any F5 OSS project you maintain. (**Note:** You might need/want to edit both the `branch` and `allowlist` parameters in the workflow.)
+
+### GitHub Actions Workflow Overview
+
+Upon a pull request (PR) submission, the F5 CLA GitHub Action workflow is triggered and a signature check for the author is done against F5's data storage.
+
+If a previous signature from the authors of the PR is not found within this F5's data storage, the [CLA Assistant GitHub Action](https://github.com/contributor-assistant/github-action) prompts the PR author to read the [F5 CLA](/docs/f5_cla.md), and agree to the [F5 CLA](/docs/f5_cla.md) terms by leaving a phrase with the comment: "I have hereby read the F5 CLA and agree to its terms".
+
+Upon detection of the specified phrase by the author in a PR comment, the action is retriggered and the authors information is collected and committed to F5's data storage.
+
+### Status Check Integrations
+
+This action integrates directly with GitHub's Status Check feature. If the action determines that signatures are still required from the pull request's author(s), it will show a failing status and vice-versa.
+
+![status-checks](/media/status-checks.png)
+
+# License
+
 [Apache License, Version 2.0](/LICENSE)
+
 &copy; [F5, Inc.](https://www.f5.com/) 2025

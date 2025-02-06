@@ -2,7 +2,7 @@
 
 ## Latest Versions
 
-We advise users to run or update to the most recent release of this project. Older versions of this project may not have all enhancements and/or bug fixes applied to them.
+We advise users to update to the most recent version of this CLA workflow and agreement. Older versions of either may lead to unforeseen consequences.
 
 ## Reporting a Vulnerability
 
