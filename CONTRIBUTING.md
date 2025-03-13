@@ -21,7 +21,7 @@ To report a bug, open an issue on GitHub with the label `bug` using the availabl
 
 ### Suggest a Feature or Enhancement
 
-To suggest a feature or enhancement, please create an issue on GitHub with the label `enhancement` using the available [feature request form](/.github/ISSUE_TEMPLATE/feature_request.yml). Please ensure the feature or enhancement has not already been suggested.
+To suggest a feature or enhancement, please create an issue on GitHub with the label `enhancement` using the available [feature request issue form](/.github/ISSUE_TEMPLATE/feature_request.yml). Please ensure the feature or enhancement has not already been suggested.
 
 ### Open a Pull Request (PR)
 
