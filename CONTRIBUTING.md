@@ -32,7 +32,7 @@ To suggest a feature or enhancement, please create an issue on GitHub with the l
 
 #### F5 Contributor License Agreement (CLA)
 
-F5 requires all contributors to agree to the terms of the F5 CLA (available [here](https://github.com/f5/f5-cla/.github/blob/main/docs/f5_cla.md)) before any of their changes can be incorporated into an F5 Open Source repository (even contributions to the F5 CLA itself!).
+F5 requires all contributors to agree to the terms of the F5 CLA (available [here](https://github.com/f5/f5-cla/blob/main/docs/f5_cla.md)) before any of their changes can be incorporated into an F5 Open Source repository (even contributions to the F5 CLA itself!).
 
 If you have not yet agreed to the F5 CLA terms and submit a PR to this repository, a bot will prompt you to view and agree to the F5 CLA. You will have to agree to the F5 CLA terms through a comment in the PR before any of your changes can be merged. Your agreement signature will be safely stored by F5 and no longer be required in future PRs.
 
