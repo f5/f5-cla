@@ -19,11 +19,12 @@ jobs:
         id: normalize
         if: github.event_name == 'issue_comment'
         shell: bash
+        env:
+          COMMENT_BODY: ${{ github.event.comment.body }}
         run: |
           # Normalize the comment by trimming whitespace and removing trailing punctuation
-          COMMENT="${{ github.event.comment.body }}"
           # Remove leading/trailing whitespace and trailing punctuation marks
-          NORMALIZED=$(echo "$COMMENT" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' -e 's/[.!?;,]*$//')
+          NORMALIZED=$(printf '%s\n' "$COMMENT_BODY" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' -e 's/[.!?;,]*$//')
           echo "normalized=$NORMALIZED" >> "$GITHUB_OUTPUT"
           echo "Normalized comment: $NORMALIZED"
       - name: Run F5 Contributor License Agreement (CLA) assistant
