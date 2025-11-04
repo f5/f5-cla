@@ -28,9 +28,9 @@ jobs:
           echo "normalized=$NORMALIZED" >> "$GITHUB_OUTPUT"
       - name: Run F5 Contributor License Agreement (CLA) assistant
         if: |
-          github.event_name == 'pull_request_target' || 
-          (github.event_name == 'issue_comment' && 
-           (steps.normalize.outputs.normalized == 'recheck' || 
+          github.event_name == 'pull_request_target' ||
+          (github.event_name == 'issue_comment' &&
+           (steps.normalize.outputs.normalized == 'recheck' ||
             steps.normalize.outputs.normalized == 'I have hereby read the F5 CLA and agree to its terms'))
         uses: contributor-assistant/github-action@ca4a40a7d1004f18d9960b404b97e5f30a505a08 # v2.6.1
         with:
