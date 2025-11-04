@@ -15,8 +15,19 @@ jobs:
       pull-requests: write
       statuses: write
     steps:
+      - name: Normalize comment body
+        id: normalize
+        if: github.event_name == 'issue_comment'
+        shell: bash
+        run: |
+          # Normalize the comment by trimming whitespace and removing trailing punctuation
+          COMMENT="${{ github.event.comment.body }}"
+          # Remove leading/trailing whitespace and trailing punctuation marks
+          NORMALIZED=$(echo "$COMMENT" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' -e 's/[.!?;,]*$//')
+          echo "normalized=$NORMALIZED" >> "$GITHUB_OUTPUT"
+          echo "Normalized comment: $NORMALIZED"
       - name: Run F5 Contributor License Agreement (CLA) assistant
-        if: (github.event.comment.body == 'recheck' || github.event.comment.body == 'I have hereby read the F5 CLA and agree to its terms') || github.event_name == 'pull_request_target'
+        if: (steps.normalize.outputs.normalized == 'recheck' || steps.normalize.outputs.normalized == 'I have hereby read the F5 CLA and agree to its terms') || github.event_name == 'pull_request_target'
         uses: contributor-assistant/github-action@ca4a40a7d1004f18d9960b404b97e5f30a505a08 # v2.6.1
         with:
           # Path to the CLA document.
