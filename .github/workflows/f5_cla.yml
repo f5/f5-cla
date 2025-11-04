@@ -26,7 +26,6 @@ jobs:
           # Remove leading/trailing whitespace and trailing punctuation marks
           NORMALIZED=$(printf '%s\n' "$COMMENT_BODY" | sed 's/^[[:space:]]*//; s/[[:space:]]*$//; s/[.!?;,]*$//')
           echo "normalized=$NORMALIZED" >> "$GITHUB_OUTPUT"
-          echo "Normalized comment: $NORMALIZED"
       - name: Run F5 Contributor License Agreement (CLA) assistant
         if: |
           github.event_name == 'pull_request_target' || 
