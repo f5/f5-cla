@@ -15,8 +15,158 @@ jobs:
       pull-requests: write
       statuses: write
     steps:
-      - name: Run F5 Contributor License Agreement (CLA) assistant
+      - name: Check NGINX contributor bypass conditions
+        id: nginx-bypass
         if: (github.event.comment.body == 'recheck' || github.event.comment.body == 'I have hereby read the F5 CLA and agree to its terms') || github.event_name == 'pull_request_target'
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        with:
+          github-token: ${{ secrets.F5_CLA_TOKEN }}
+          script: |
+            core.setOutput('skip-cla', 'false');
+
+            // Condition 1: Repository must be nginx/nginx
+            const { owner, repo } = context.repo;
+            if (owner !== 'nginx' || repo !== 'nginx') {
+              core.info('Repository is not nginx/nginx. CLA check required.');
+              return;
+            }
+
+            // Resolve PR details for both event types
+            let pr;
+            if (context.eventName === 'pull_request_target') {
+              pr = context.payload.pull_request;
+            } else if (context.eventName === 'issue_comment') {
+              if (!context.payload.issue.pull_request) {
+                core.info('Comment is not on a pull request. CLA check required.');
+                return;
+              }
+              const { data } = await github.rest.pulls.get({
+                owner,
+                repo,
+                pull_number: context.payload.issue.number,
+              });
+              pr = data;
+            } else {
+              return;
+            }
+
+            // Condition 2a: The PR opener must be "dekobon"
+            const prAuthor = pr.user.login;
+            if (prAuthor !== 'dekobon') {
+              core.info(`PR author "${prAuthor}" is not "dekobon". CLA check required.`);
+              return;
+            }
+
+            // Condition 2b: "dekobon" must be a member of the NGINX GitHub org
+            try {
+              await github.rest.orgs.checkMembershipForUser({
+                org: 'nginx',
+                username: 'dekobon',
+              });
+              core.info('"dekobon" is a confirmed member of the NGINX org.');
+            } catch (error) {
+              core.info(`"dekobon" is not a confirmed member of the NGINX org: ${error.message}. CLA check required.`);
+              return;
+            }
+
+            // Condition 2c: "dekobon" must have an @f5.com email (primary or secondary)
+            let hasF5Email = false;
+
+            // Check public profile email
+            try {
+              const { data: user } = await github.rest.users.getByUsername({
+                username: 'dekobon',
+              });
+              if (user.email && user.email.endsWith('@f5.com')) {
+                hasF5Email = true;
+                core.info('Found @f5.com email on public profile.');
+              }
+            } catch (e) {
+              core.info(`Could not fetch user profile: ${e.message}`);
+            }
+
+            // Check organization verified domain emails (f5 org)
+            if (!hasF5Email) {
+              try {
+                const result = await github.graphql(`
+                  query($login: String!) {
+                    user(login: $login) {
+                      organizationVerifiedDomainEmails(login: "f5")
+                    }
+                  }
+                `, { login: 'dekobon' });
+                const emails = result.user.organizationVerifiedDomainEmails || [];
+                if (emails.some(e => e.endsWith('@f5.com'))) {
+                  hasF5Email = true;
+                  core.info('Found @f5.com email via f5 org verified domain emails.');
+                }
+              } catch (e) {
+                core.info(`Could not check f5 org verified domain emails: ${e.message}`);
+              }
+            }
+
+            // Check organization verified domain emails (nginx org)
+            if (!hasF5Email) {
+              try {
+                const result = await github.graphql(`
+                  query($login: String!) {
+                    user(login: $login) {
+                      organizationVerifiedDomainEmails(login: "nginx")
+                    }
+                  }
+                `, { login: 'dekobon' });
+                const emails = result.user.organizationVerifiedDomainEmails || [];
+                if (emails.some(e => e.endsWith('@f5.com'))) {
+                  hasF5Email = true;
+                  core.info('Found @f5.com email via nginx org verified domain emails.');
+                }
+              } catch (e) {
+                core.info(`Could not check nginx org verified domain emails: ${e.message}`);
+              }
+            }
+
+            if (!hasF5Email) {
+              core.info('"dekobon" does not have a verified @f5.com email. CLA check required.');
+              return;
+            }
+
+            // Condition 3a: PR description must contain the required text
+            const body = pr.body || '';
+            if (!body.includes('Contribution guidelines have been verified')) {
+              core.info('PR description does not contain "Contribution guidelines have been verified". CLA check required.');
+              return;
+            }
+
+            // Condition 3b: PR description must not have been modified after creation
+            try {
+              const result = await github.graphql(`
+                query($owner: String!, $name: String!, $number: Int!) {
+                  repository(owner: $owner, name: $name) {
+                    pullRequest(number: $number) {
+                      userContentEdits(first: 1) {
+                        totalCount
+                      }
+                    }
+                  }
+                }
+              `, { owner, name: repo, number: pr.number });
+
+              const edits = result.repository.pullRequest.userContentEdits;
+              if (edits === null || edits.totalCount > 0) {
+                core.info('PR description has been edited after creation or edit history is unavailable. CLA check required.');
+                return;
+              }
+            } catch (error) {
+              core.info(`Could not verify PR edit history: ${error.message}. CLA check required.`);
+              return;
+            }
+
+            // All conditions met — skip CLA
+            core.info('All NGINX contributor bypass conditions met. Skipping CLA check.');
+            core.setOutput('skip-cla', 'true');
+
+      - name: Run F5 Contributor License Agreement (CLA) assistant
+        if: steps.nginx-bypass.outputs.skip-cla != 'true' && ((github.event.comment.body == 'recheck' || github.event.comment.body == 'I have hereby read the F5 CLA and agree to its terms') || github.event_name == 'pull_request_target')
         uses: contributor-assistant/github-action@ca4a40a7d1004f18d9960b404b97e5f30a505a08 # v2.6.1
         with:
           # Path to the CLA document.
