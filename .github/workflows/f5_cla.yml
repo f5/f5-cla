@@ -15,7 +15,7 @@ jobs:
       pull-requests: write
       statuses: write
     steps:
-      - name: Normalize comment body
+      - name: Normalize comment for matching
         id: normalize
         if: github.event_name == 'issue_comment'
         shell: bash
@@ -23,9 +23,13 @@ jobs:
           COMMENT_BODY: ${{ github.event.comment.body }}
         run: |
           # Normalize the comment by trimming whitespace and removing trailing punctuation
-          # Remove leading/trailing whitespace and trailing punctuation marks
-          NORMALIZED=$(printf '%s\n' "$COMMENT_BODY" | sed 's/^[[:space:]]*//; s/[[:space:]]*$//; s/[.!?;,]*$//')
-          echo "normalized=$NORMALIZED" >> "$GITHUB_OUTPUT"
+          # This helps match CLA agreement responses even when users add natural punctuation
+          NORMALIZED=$(printf '%s' "$COMMENT_BODY" | tr '\n' ' ' | sed 's/^[[:space:]]*//; s/[[:space:]]*$//; s/[.!?;,]*$//')
+          {
+            echo 'normalized<<EOF_NORMALIZED'
+            printf '%s\n' "$NORMALIZED"
+            echo 'EOF_NORMALIZED'
+          } >> "$GITHUB_OUTPUT"
       - name: Run F5 Contributor License Agreement (CLA) assistant
         if: |
           github.event_name == 'pull_request_target' ||
