@@ -24,6 +24,8 @@ If a previous signature from the authors of the PR is not found within this F5's
 
 Upon detection of the specified phrase by the author in a PR comment, the action is retriggered and the authors information is collected and committed to F5's data storage.
 
+**Note:** The workflow automatically normalizes comments by trimming whitespace and removing trailing punctuation (`.`, `!`, `?`, `;`, `,`), so users can naturally add punctuation to the end of their CLA agreement statement without causing the approval to fail.
+
 ### Status Check Integrations
 
 This action integrates directly with GitHub's Status Check feature. If the action determines that signatures are still required from the pull request's author(s), it will show a failing status and vice-versa.
